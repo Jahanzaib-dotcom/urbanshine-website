@@ -1,0 +1,5 @@
+.DS_Store
+__pycache__/
+*.pyc
+.vercel
+assets/images/hero-cleaner-old.jpg

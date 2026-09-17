@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+build_multipage_site.py
+assets/images/original
+assets/images/hero-cleaner-old.jpg
+.git
+.github
