@@ -566,6 +566,18 @@ function initBookingModal() {
         return;
       }
 
+      // Automatically route enquiry to Admin Panel
+      if (window.UrbanShineLeads) {
+        window.UrbanShineLeads.addLead({
+          name: name,
+          phone: phone,
+          email: email,
+          suburb: suburb,
+          service: service,
+          source: 'Homepage Booking Modal'
+        });
+      }
+
       // Close booking modal
       closeModal(modalOverlay);
 
@@ -690,6 +702,19 @@ function initSubpageForms() {
         return;
       }
 
+      // Automatically route enquiry to Admin Panel
+      if (window.UrbanShineLeads) {
+        window.UrbanShineLeads.addLead({
+          name: name,
+          phone: phone,
+          suburb: suburb,
+          service: serviceName,
+          scope: selectedScope,
+          date: date,
+          source: 'Service Page Sidebar Quote'
+        });
+      }
+
       // Pre-filled WhatsApp message
       const textMsg = encodeURIComponent(
         `Hello Urban Shine Perth! 👋\n` +
@@ -749,6 +774,20 @@ function initContactPageForm() {
     if (!name || !phone) {
       alert('Please fill in your name and contact phone number.');
       return;
+    }
+
+    // Automatically route enquiry to Admin Panel
+    if (window.UrbanShineLeads) {
+      window.UrbanShineLeads.addLead({
+        name: name,
+        email: email,
+        phone: phone,
+        service: service,
+        urgency: urgency,
+        suburb: suburb,
+        notes: message,
+        source: 'Contact Us Page Form'
+      });
     }
 
     const waMsg = encodeURIComponent(
@@ -844,6 +883,22 @@ function initBookPage() {
     if (!name || !phone) {
       alert('Please provide your name and contact phone number.');
       return;
+    }
+
+    // Automatically route enquiry to Admin Panel
+    if (window.UrbanShineLeads) {
+      window.UrbanShineLeads.addLead({
+        name: name,
+        phone: phone,
+        email: email,
+        suburb: suburb,
+        service: service,
+        scope: currentPrice,
+        date: preferredDate,
+        time: preferredSlot,
+        notes: notes,
+        source: 'Book Online Page'
+      });
     }
 
     const waMsg = encodeURIComponent(
