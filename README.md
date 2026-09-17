@@ -27,7 +27,7 @@ A bespoke, ultra-fast, high-converting website for **Urban Shine** (`urbanshinem
 5. **Integrated Dispatch & Modals**:
    - **Service Detail Modal**: Dynamic modal loaded with equipment specs, turnaround times, and scope of work for all 12 services.
    - **Booking Request Modal**: Comprehensive quote request engine with residential/commercial selector, preferred dates, and suburb validation.
-   - **Success Modal with WhatsApp Handoff**: Auto-generates a structured dispatch message to `+61 410 148 126`.
+   - **Success Modal with WhatsApp Handoff**: Auto-generates a structured dispatch message to `+61 432 979 551`.
    - **Floating WhatsApp Widget**: Persistent bottom-right CTA with live dispatch ping.
 
 6. **Trust, Quality & Local SEO**:

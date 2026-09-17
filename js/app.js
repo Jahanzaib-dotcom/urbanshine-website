@@ -572,7 +572,7 @@ function initBookingModal() {
       // Setup WhatsApp click-through on success
       const waMsg = encodeURIComponent(`Hello Urban Shine, I have just submitted a quote request.\nName: ${name}\nPhone: ${phone}\nSuburb: ${suburb}\nService: ${service}\nEmail: ${email}`);
       if (successWhatsAppBtn) {
-        successWhatsAppBtn.href = `https://wa.me/61410148126?text=${waMsg}`;
+        successWhatsAppBtn.href = `https://wa.me/61432979551?text=${waMsg}`;
       }
 
       // Show success modal
@@ -704,7 +704,7 @@ function initSubpageForms() {
         `Please confirm technician availability.`
       );
 
-      const waUrl = `https://wa.me/61410148126?text=${textMsg}`;
+      const waUrl = `https://wa.me/61432979551?text=${textMsg}`;
 
       // Show success state inside the card
       const formContainer = form.parentElement;
@@ -763,7 +763,7 @@ function initContactPageForm() {
       `• Message: ${message}`
     );
 
-    const waUrl = `https://wa.me/61410148126?text=${waMsg}`;
+    const waUrl = `https://wa.me/61432979551?text=${waMsg}`;
 
     contactForm.innerHTML = `
       <div class="form-success-banner" style="margin-top:0;">
@@ -860,7 +860,7 @@ function initBookPage() {
       `Please lock in this appointment.`
     );
 
-    const waUrl = `https://wa.me/61410148126?text=${waMsg}`;
+    const waUrl = `https://wa.me/61432979551?text=${waMsg}`;
 
     bookForm.innerHTML = `
       <div class="form-success-banner" style="padding:40px 24px;">
