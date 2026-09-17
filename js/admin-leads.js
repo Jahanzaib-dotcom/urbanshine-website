@@ -1,6 +1,7 @@
 /**
- * Urban Shine Perth - Central Leads Management Engine
- * Handles saving, reading, updating, and exporting customer enquiries.
+ * Urban Shine Perth - Real-Time Leads Management Engine
+ * Captures live customer queries directly from website quote forms.
+ * Zero hardcoded mock data.
  */
 
 (function () {
@@ -12,61 +13,8 @@
   const DEFAULT_SETTINGS = {
     whatsappNumber: '+61432979551',
     businessName: 'Urban Shine Perth',
-    emailNotifications: true,
     soundAlerts: true
   };
-
-  // Seed sample leads matching Perth service scope
-  const SEED_LEADS = [
-    {
-      id: 'US-2026-101',
-      name: 'Sarah Connor',
-      company: 'Skynet Perth Facility',
-      phone: '0432 979 551',
-      email: 's.connor@skynet.com.au',
-      suburb: 'Perth CBD (6000)',
-      service: 'Carpet Steam Cleaning',
-      scope: 'Commercial (3 Floors)',
-      date: '2026-09-18',
-      time: '14:00',
-      status: 'New',
-      notes: 'High-traffic lobby and boardroom carpet deep steam extraction.',
-      source: 'Homepage Booking Modal',
-      createdAt: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-      id: 'US-2026-102',
-      name: 'David Miller',
-      company: 'Residential Property',
-      phone: '0412 884 921',
-      email: 'david.miller@westnet.com.au',
-      suburb: 'Cottesloe (6011)',
-      service: 'Complete Timber Floor Restoration',
-      scope: '4 Bedrooms + Living',
-      date: '2026-09-19',
-      time: '09:30',
-      status: 'Pending',
-      notes: 'Heritage Jarrah floor sanding, scratch repair, and satin polyurethane seal.',
-      source: 'Book Online Page',
-      createdAt: new Date(Date.now() - 14400000).toISOString()
-    },
-    {
-      id: 'US-2026-103',
-      name: 'Elena Rossi',
-      company: 'Rossi Cafe & Bistro',
-      phone: '0421 556 709',
-      email: 'elena@rossicafe.com.au',
-      suburb: 'Scarborough (6019)',
-      service: 'Rotary Tile & Grout Deep Cleaning',
-      scope: 'Commercial Kitchen & Dining',
-      date: '2026-09-20',
-      time: '06:00',
-      status: 'Confirmed',
-      notes: 'Commercial kitchen quarry tile descaling and dining area porcelain grout restoration.',
-      source: 'Service Page Quote',
-      createdAt: new Date(Date.now() - 86400000).toISOString()
-    }
-  ];
 
   const UrbanShineLeads = {
     getSettings() {
@@ -94,13 +42,18 @@
       try {
         const data = localStorage.getItem(STORAGE_KEY);
         if (!data) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_LEADS));
-          return [...SEED_LEADS];
+          return [];
         }
-        return JSON.parse(data);
+        const leads = JSON.parse(data);
+        // Filter out any leftover demo leads if present from earlier testing
+        const realLeads = leads.filter(l => !l.id || !l.id.startsWith('US-2026-10'));
+        if (realLeads.length !== leads.length) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(realLeads));
+        }
+        return realLeads;
       } catch (e) {
         console.error('Failed to read leads:', e);
-        return [...SEED_LEADS];
+        return [];
       }
     },
 
@@ -115,37 +68,35 @@
 
     addLead(leadData) {
       const leads = this.getLeads();
-      const nextNum = leads.length > 0 
-        ? Math.max(...leads.map(l => parseInt((l.id || '').replace(/\D/g, '') || '0'))) + 1 
-        : 101;
-      
+      const timestamp = new Date();
+      const leadId = `US-${timestamp.getFullYear()}-${String(leads.length + 1).padStart(3, '0')}`;
+
       const newLead = {
-        id: `US-2026-${nextNum}`,
-        name: leadData.name || 'Anonymous Client',
-        company: leadData.company || leadData.suburb || 'Residential Customer',
+        id: leadId,
+        name: leadData.name || 'Website Customer',
+        company: leadData.company || leadData.suburb || 'Residential Enquiry',
         phone: leadData.phone || '',
         email: leadData.email || '',
         suburb: leadData.suburb || 'Perth Metro',
-        service: leadData.service || 'General Cleaning Enquiry',
-        scope: leadData.scope || 'Standard Inspection',
-        date: leadData.date || new Date().toISOString().split('T')[0],
-        time: leadData.time || '10:00',
+        service: leadData.service || 'General Enquiry',
+        scope: leadData.scope || leadData.urgency || 'Standard Free Assessment',
+        date: leadData.date || timestamp.toISOString().split('T')[0],
+        time: leadData.time || '',
         status: 'New',
         notes: leadData.notes || '',
-        source: leadData.source || 'Website Form',
+        source: leadData.source || 'Website Form Submission',
         urgency: leadData.urgency || 'Standard',
-        createdAt: new Date().toISOString()
+        createdAt: timestamp.toISOString()
       };
 
       leads.unshift(newLead);
       this.saveLeads(leads);
 
-      // Play subtle chime if audio is supported and enabled
       if (this.getSettings().soundAlerts) {
         this.playNotificationSound();
       }
 
-      console.log('Urban Shine Lead Logged:', newLead);
+      console.log('Real Lead Logged to Admin:', newLead);
       return newLead;
     },
 
@@ -166,12 +117,6 @@
       return leads;
     },
 
-    resetToDemo() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_LEADS));
-      window.dispatchEvent(new CustomEvent('urbanshine_leads_changed', { detail: SEED_LEADS }));
-      return [...SEED_LEADS];
-    },
-
     clearAll() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
       window.dispatchEvent(new CustomEvent('urbanshine_leads_changed', { detail: [] }));
@@ -181,14 +126,13 @@
     getMetrics() {
       const leads = this.getLeads();
       const total = leads.length;
-      const pending = leads.filter(l => l.status === 'New' || l.status === 'Pending').length;
+      const pending = leads.filter(l => (l.status || 'New') === 'New' || l.status === 'Pending').length;
       const active = leads.filter(l => l.status === 'Confirmed' || l.status === 'In Progress').length;
       const won = leads.filter(l => l.status === 'Completed' || l.status === 'Won').length;
 
-      // Group by service
       const byService = {};
       leads.forEach(l => {
-        const s = l.service || 'General Service';
+        const s = l.service || 'General Cleaning';
         byService[s] = (byService[s] || 0) + 1;
       });
 
@@ -198,19 +142,18 @@
     exportCSV() {
       const leads = this.getLeads();
       if (!leads.length) {
-        alert('No leads available to export.');
+        alert('No enquiries logged yet. Real submissions from your website forms will appear here.');
         return;
       }
 
-      const headers = ['Lead ID', 'Date Created', 'Customer Name', 'Company/Type', 'Phone', 'Email', 'Suburb', 'Service', 'Scope', 'Preferred Date', 'Status', 'Source', 'Notes'];
+      const headers = ['Lead ID', 'Timestamp', 'Customer Name', 'Location / Suburb', 'Phone', 'Email', 'Service', 'Scope / Urgency', 'Appointment Date', 'Status', 'Source Form', 'Notes'];
       const rows = leads.map(l => [
         `"${l.id || ''}"`,
         `"${l.createdAt || ''}"`,
         `"${(l.name || '').replace(/"/g, '""')}"`,
-        `"${(l.company || '').replace(/"/g, '""')}"`,
+        `"${(l.suburb || l.company || '').replace(/"/g, '""')}"`,
         `"${l.phone || ''}"`,
         `"${l.email || ''}"`,
-        `"${(l.suburb || '').replace(/"/g, '""')}"`,
         `"${(l.service || '').replace(/"/g, '""')}"`,
         `"${(l.scope || '').replace(/"/g, '""')}"`,
         `"${l.date || ''} ${l.time || ''}"`,
@@ -219,7 +162,7 @@
         `"${(l.notes || '').replace(/"/g, '""')}"`
       ]);
 
-      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
@@ -235,8 +178,8 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
         gain.gain.setValueAtTime(0.12, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
         osc.connect(gain);
@@ -244,7 +187,7 @@
         osc.start();
         osc.stop(ctx.currentTime + 0.3);
       } catch (e) {
-        // AudioContext may be blocked before interaction
+        // Ignored
       }
     }
   };
