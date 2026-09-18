@@ -15,12 +15,34 @@
 </head>
 <body class="admin-body">
 
-  <!-- Left Sidebar -->
-  <aside class="admin-sidebar">
-    <a href="/admin" class="admin-brand">
-      <img src="/assets/images/logo-emblem.png" alt="Urban Shine Emblem" class="admin-brand-logo">
-      <div class="admin-brand-title">Urban Shine <span>Admin</span></div>
-    </a>
+  <!-- Mobile Top Navigation Bar (Displayed <= 992px) -->
+  <header class="admin-mobile-bar">
+    <div class="admin-mobile-left">
+      <button type="button" class="admin-mobile-toggle" id="mobileDrawerBtn" onclick="toggleSidebarDrawer()" aria-label="Toggle Navigation Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <a href="/admin" class="admin-mobile-brand">
+        <img src="/assets/images/logo-emblem.png" alt="Urban Shine Emblem" style="width:26px; height:26px; object-fit:contain;">
+        <span>Urban Shine <strong>Admin</strong></span>
+      </a>
+    </div>
+    <div class="admin-mobile-right">
+      <div class="admin-mobile-avatar" id="mobileUserAvatar" onclick="toggleSidebarDrawer()" title="Account & Navigation">A</div>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="admin-sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebarDrawer()"></div>
+
+  <!-- Left Sidebar (Desktop Fixed / Mobile Off-Canvas Drawer) -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-brand">
+      <a href="/admin" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:#FFFFFF;">
+        <img src="/assets/images/logo-emblem.png" alt="Urban Shine Emblem" class="admin-brand-logo">
+        <div class="admin-brand-title">Urban Shine <span>Admin</span></div>
+      </a>
+      <button type="button" class="admin-sidebar-close" onclick="closeSidebarDrawer()" aria-label="Close Drawer">✕</button>
+    </div>
 
     <ul class="admin-nav">
       <li class="admin-nav-item">
@@ -420,20 +442,20 @@
           const waHref = waTarget ? `https://wa.me/${waTarget}?text=${waText}` : '#';
 
           tr.innerHTML = `
-            <td>
+            <td data-label="Customer">
               <span class="cell-client-name">${escapeHtml(lead.name)}</span>
               <span class="cell-client-company">${escapeHtml(lead.suburb || lead.company || 'Perth Metro')}</span>
             </td>
-            <td>
+            <td data-label="Service">
               <div class="cell-service-name">${escapeHtml(lead.service)}</div>
             </td>
-            <td class="cell-date">${formattedDate}</td>
-            <td>
+            <td data-label="Date" class="cell-date">${formattedDate}</td>
+            <td data-label="Status">
               <span class="badge-status badge-status-${statusLower}" onclick="cycleStatus('${lead.id}')" title="Click to cycle status">
                 ${escapeHtml(lead.status || 'New')}
               </span>
             </td>
-            <td style="text-align: right;">
+            <td data-label="Actions" style="text-align: right;">
               <div class="cell-actions" style="justify-content: flex-end;">
                 <button class="btn-details" onclick="viewLeadDetail('${lead.id}')">Details</button>
                 <a href="${waHref}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-action">
@@ -662,6 +684,29 @@
       }
     }
 
+    // Mobile Drawer Controls
+    function toggleSidebarDrawer() {
+      const sidebar = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar) return;
+      const isOpen = sidebar.classList.contains('drawer-open');
+      if (isOpen) {
+        closeSidebarDrawer();
+      } else {
+        sidebar.classList.add('drawer-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeSidebarDrawer() {
+      const sidebar = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar) sidebar.classList.remove('drawer-open');
+      if (backdrop) backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
     function renderAdminUserProfile() {
       const savedUserStr = sessionStorage.getItem('urbanshine_admin_user') || localStorage.getItem('urbanshine_admin_user');
       if (savedUserStr) {
@@ -670,13 +715,25 @@
           const nameEl = document.getElementById('adminUserName');
           const roleEl = document.getElementById('adminUserRole');
           const avatarEl = document.getElementById('adminUserAvatar');
+          const mobileAvatarEl = document.getElementById('mobileUserAvatar');
           const displayName = u.name || u.username || 'admin';
           if (nameEl) nameEl.textContent = displayName;
           if (roleEl && u.role) roleEl.textContent = u.role;
-          if (avatarEl) avatarEl.textContent = (displayName[0] || 'A').toUpperCase();
+          const letter = (displayName[0] || 'A').toUpperCase();
+          if (avatarEl) avatarEl.textContent = letter;
+          if (mobileAvatarEl) mobileAvatarEl.textContent = letter;
         } catch (e) {}
       }
     }
+
+    // Close drawer when clicking nav items on mobile
+    const originalSwitchAdminTab = window.switchAdminTab;
+    window.switchAdminTab = function(tabName) {
+      if (typeof originalSwitchAdminTab === 'function') {
+        originalSwitchAdminTab(tabName);
+      }
+      closeSidebarDrawer();
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
       renderAdminUserProfile();

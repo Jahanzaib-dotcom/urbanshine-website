@@ -906,35 +906,388 @@ body.admin-body {
 }
 
 /* ==========================================================================
-   Responsive Adaptations
+   Responsive Architecture & Mobile-First Optimizations
    ========================================================================== */
+
+/* Hidden on desktop */
+.admin-mobile-bar {
+  display: none;
+}
+
+.admin-sidebar-backdrop {
+  display: none;
+}
+
+.admin-sidebar-close {
+  display: none;
+}
+
 @media (max-width: 1180px) {
   .admin-metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
   }
   .admin-columns-layout {
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 992px) {
+  body.admin-body {
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Sticky Mobile App Top Bar */
+  .admin-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 16px;
+    background-color: var(--admin-sidebar-bg);
+    border-bottom: 1px solid var(--admin-sidebar-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+
+  .admin-mobile-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .admin-mobile-toggle {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .admin-mobile-toggle:hover, .admin-mobile-toggle:active {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .admin-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .admin-mobile-brand span {
+    color: var(--admin-primary);
+  }
+
+  .admin-mobile-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .admin-mobile-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1E293B;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  /* Slide-out Off-Canvas Drawer */
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-sidebar.drawer-open {
+    transform: translateX(0) !important;
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .admin-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+    z-index: 1999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .admin-sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .admin-sidebar-close {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #FFFFFF;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: auto;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+  }
+
+  .admin-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .admin-brand {
+    padding: 16px 18px;
+    justify-content: space-between;
+  }
+
+  /* Main Canvas */
+  .admin-main {
+    padding: 20px 16px 40px 16px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-columns-layout {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  body.admin-body {
-    flex-direction: column;
-  }
-  .admin-sidebar {
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    position: relative;
-  }
-  .admin-main {
-    padding: 20px 16px;
-  }
-  .admin-metrics-grid {
-    grid-template-columns: 1fr;
-  }
   .admin-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .admin-header-title {
+    font-size: 1.35rem;
+  }
+
+  .admin-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-admin-header {
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  /* Metric cards 2-column grid */
+  .admin-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .admin-metric-card {
+    padding: 14px 14px;
+    border-radius: 12px;
+  }
+
+  .admin-metric-val {
+    font-size: 1.6rem;
+    margin: 6px 0 2px 0;
+  }
+
+  .admin-metric-label {
+    font-size: 0.74rem;
+  }
+
+  /* Controls & Filters */
+  .admin-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .admin-pills-group {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    gap: 4px;
+  }
+
+  .filter-pill-btn {
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 0.76rem;
+    flex-shrink: 0;
+  }
+
+  .admin-search-box {
+    width: 100%;
+  }
+
+  .admin-search-box input {
+    width: 100%;
+    font-size: 16px !important; /* iOS Zoom Fix */
+    padding-left: 32px;
+  }
+
+  /* Responsive Mobile Card View for Enquiries Table */
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-table-scroll {
+    overflow-x: visible;
+    padding: 12px;
+  }
+
+  .admin-table tr {
+    background: #FFFFFF;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    font-size: 0.85rem;
+    text-align: right;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    justify-content: flex-end;
+  }
+
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: var(--admin-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    text-align: left;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .cell-client-name {
+    font-size: 0.92rem;
+  }
+
+  .cell-client-company {
+    font-size: 0.76rem;
+  }
+
+  .cell-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .btn-details, .btn-whatsapp-action {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+
+  /* Modals on Mobile */
+  .admin-modal-box {
+    width: calc(100% - 24px);
+    max-height: 92vh;
+    margin: 12px;
+    border-radius: 14px;
+  }
+
+  .admin-modal-header {
+    padding: 16px 18px;
+  }
+
+  .admin-modal-body {
+    padding: 18px;
+    font-size: 0.84rem;
+  }
+
+  .admin-modal-footer {
+    padding: 14px 18px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .admin-modal-footer .btn-admin-header {
+    width: 100%;
   }
 }
+
+@media (max-width: 420px) {
+  .admin-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .admin-metric-card {
+    padding: 12px 10px;
+  }
+  .admin-metric-val {
+    font-size: 1.45rem;
+  }
+  .admin-header-actions {
+    grid-template-columns: 1fr;
+  }
+}
+

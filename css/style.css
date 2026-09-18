@@ -2471,3 +2471,41 @@ img, svg {
     height: 220px;
   }
 }
+
+/* ==========================================================================
+   Responsive Form Grid Helpers
+   ========================================================================== */
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 680px) {
+  .form-grid-2col {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .form-control, input.form-control, select.form-control, textarea.form-control {
+    font-size: 16px !important; /* Prevents iOS Safari unwanted auto-zoom */
+  }
+
+  /* Responsive collapses for inline subpage grids */
+  .reviews-grid[style*="grid-template-columns"],
+  .content-block div[style*="grid-template-columns:repeat(3"],
+  .content-block div[style*="grid-template-columns:1fr 1fr"],
+  .content-block div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .service-photo-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
