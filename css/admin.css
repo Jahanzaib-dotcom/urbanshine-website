@@ -5,17 +5,17 @@
 
 :root {
   --admin-bg: #F8FAFC;
-  --admin-sidebar-bg: #0B0E23;
-  --admin-sidebar-hover: #15193A;
-  --admin-sidebar-active: rgba(239, 68, 68, 0.14);
+  --admin-sidebar-bg: #080B2C; /* Exact Midnight Navy from Uploaded Logo */
+  --admin-sidebar-hover: #101548;
+  --admin-sidebar-active: rgba(247, 134, 21, 0.18);
   --admin-sidebar-border: rgba(255, 255, 255, 0.08);
   --admin-card-bg: #FFFFFF;
-  --admin-text-main: #111827;
+  --admin-text-main: #080B2C;
   --admin-text-muted: #64748B;
   --admin-text-subtle: #94A3B8;
-  --admin-primary: #EF4444; /* Reference red accent matching screenshot */
-  --admin-primary-hover: #DC2626;
-  --admin-accent-orange: #F78614; /* Urban Shine Brand Orange */
+  --admin-primary: #F78615; /* Exact Vibrant Sunburst Orange from Uploaded Logo */
+  --admin-primary-hover: #E06D04;
+  --admin-accent-orange: #F78615;
   --admin-success: #10B981;
   --admin-warning: #F59E0B;
   --admin-info: #3B82F6;
@@ -40,13 +40,18 @@ html, body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  width: 100% !important;
   -webkit-font-smoothing: antialiased;
 }
 
 body.admin-body {
   display: flex;
   min-height: 100vh;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
 }
 
 /* ==========================================================================
@@ -529,7 +534,7 @@ body.admin-body {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  min-width: 620px;
+  min-width: 0;
 }
 
 .admin-table th {
