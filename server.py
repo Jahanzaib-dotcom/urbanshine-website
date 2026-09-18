@@ -18,9 +18,17 @@ class LeadHandler(http.server.SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, HEAD")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
+
+    def do_HEAD(self):
+        if self.path in ("/admin/login", "/admin/login/", "/admin", "/admin/"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            return
+        super().do_HEAD()
 
     def do_GET(self):
         if self.path == "/api/leads" or self.path.startswith("/api/leads?"):
@@ -36,8 +44,21 @@ class LeadHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(b"[]")
             return
 
-        if self.path == "/admin":
-            self.path = "/admin.html"
+        if self.path in ("/admin/login", "/admin/login/"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(DIRECTORY, "admin", "login.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        if self.path in ("/admin", "/admin/"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(DIRECTORY, "admin", "index.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
 
         super().do_GET()
 
