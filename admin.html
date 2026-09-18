@@ -305,6 +305,14 @@
     function initDashboard() {
       renderDashboard();
 
+      // Fetch latest leads from server immediately and on interval
+      if (window.UrbanShineLeads && window.UrbanShineLeads.syncWithServer) {
+        window.UrbanShineLeads.syncWithServer(renderDashboard);
+        setInterval(() => {
+          window.UrbanShineLeads.syncWithServer(renderDashboard);
+        }, 4000);
+      }
+
       // Listen for updates from real form submissions across any tab
       window.addEventListener('storage', (e) => {
         if (e.key === 'urbanshine_leads' || e.key === 'urbanshine_admin_settings') {

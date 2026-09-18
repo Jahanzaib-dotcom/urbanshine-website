@@ -1,6 +1,7 @@
 /**
  * Urban Shine Perth - Real-Time Leads Management Engine
  * Captures live customer queries directly from website quote forms.
+ * Synchronizes across localStorage and /api/leads backend.
  * Zero hardcoded mock data.
  */
 
@@ -41,12 +42,12 @@
     getLeads() {
       try {
         const data = localStorage.getItem(STORAGE_KEY);
-        if (!data) {
-          return [];
-        }
+        if (!data) return [];
         const leads = JSON.parse(data);
-        // Filter out any leftover demo leads if present from earlier testing
-        const realLeads = leads.filter(l => !l.id || !l.id.startsWith('US-2026-10'));
+        // Exclude any legacy test records
+        const realLeads = leads.filter(l => 
+          l && l.name && l.name !== 'Sarah Connor' && l.name !== 'David Miller' && l.name !== 'Elena Rossi'
+        );
         if (realLeads.length !== leads.length) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(realLeads));
         }
@@ -69,7 +70,8 @@
     addLead(leadData) {
       const leads = this.getLeads();
       const timestamp = new Date();
-      const leadId = `US-${timestamp.getFullYear()}-${String(leads.length + 1).padStart(3, '0')}`;
+      const nextNum = leads.length + 1;
+      const leadId = `US-${timestamp.getFullYear()}-${String(nextNum).padStart(3, '0')}`;
 
       const newLead = {
         id: leadId,
@@ -89,8 +91,25 @@
         createdAt: timestamp.toISOString()
       };
 
+      // 1. Immediately store in client localStorage
       leads.unshift(newLead);
       this.saveLeads(leads);
+
+      // 2. Asynchronously sync to backend API (Vercel serverless / server.py)
+      try {
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newLead)
+        }).then(r => r.json()).then(res => {
+          console.log('Lead synced to server API:', res);
+        }).catch(err => {
+          // Local fallback silently maintains state in localStorage
+          console.log('API sync notice:', err.message);
+        });
+      } catch (e) {
+        // Ignored
+      }
 
       if (this.getSettings().soundAlerts) {
         this.playNotificationSound();
@@ -100,12 +119,46 @@
       return newLead;
     },
 
+    syncWithServer(callback) {
+      fetch('/api/leads')
+        .then(r => r.json())
+        .then(remoteLeads => {
+          if (Array.isArray(remoteLeads) && remoteLeads.length > 0) {
+            const localLeads = this.getLeads();
+            const existingIds = new Set(localLeads.map(l => l.id));
+            let added = false;
+            remoteLeads.forEach(rLead => {
+              if (rLead && rLead.id && !existingIds.has(rLead.id)) {
+                localLeads.push(rLead);
+                existingIds.add(rLead.id);
+                added = true;
+              }
+            });
+            if (added) {
+              localLeads.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+              this.saveLeads(localLeads);
+            }
+          }
+          if (callback) callback(this.getLeads());
+        })
+        .catch(() => {
+          if (callback) callback(this.getLeads());
+        });
+    },
+
     updateLead(id, updates) {
       const leads = this.getLeads();
       const index = leads.findIndex(l => l.id === id);
       if (index !== -1) {
         leads[index] = { ...leads[index], ...updates };
         this.saveLeads(leads);
+        try {
+          fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, ...updates })
+          }).catch(() => {});
+        } catch (e) {}
         return leads[index];
       }
       return null;
@@ -119,6 +172,13 @@
 
     clearAll() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      try {
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'clear' })
+        }).catch(() => {});
+      } catch (e) {}
       window.dispatchEvent(new CustomEvent('urbanshine_leads_changed', { detail: [] }));
       return [];
     },

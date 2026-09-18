@@ -515,6 +515,7 @@ function initQuoteCalculator() {
    ========================================================================== */
 function initBookingModal() {
   const modalOverlay = document.getElementById('bookingModalOverlay');
+  if (!modalOverlay) return;
   const closeBtn = document.getElementById('bookingModalCloseBtn');
   const bookingForm = document.getElementById('bookingForm');
   const serviceSelect = document.getElementById('bookingServiceSelect');
@@ -743,10 +744,15 @@ function initSubpageForms() {
         <p class="form-success-desc">
           Thank you, <strong>${name}</strong>. Your ${serviceName} request in <strong>${suburb}</strong> has been prioritized. Our dispatch supervisor will phone you on <strong>${phone}</strong> shortly.
         </p>
-        <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-          Connect on WhatsApp Now
-        </a>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            Connect on WhatsApp Now
+          </a>
+          <a href="/admin" class="btn btn-outline" style="padding:10px 14px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.88rem;">
+            View in Admin Panel →
+          </a>
+        </div>
       `;
       formContainer.appendChild(successBox);
     });
@@ -811,9 +817,14 @@ function initContactPageForm() {
         <p class="form-success-desc">
           Thank you <strong>${name}</strong>. Our Perth customer care team has received your message regarding <strong>${service}</strong>. We will contact you at <strong>${phone}</strong> shortly.
         </p>
-        <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn">
-          Connect with Perth Operations on WhatsApp
-        </a>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; max-width:440px; margin:0 auto;">
+          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn" style="flex:1; min-width:180px;">
+            Connect on WhatsApp
+          </a>
+          <a href="/admin" class="btn btn-outline" style="padding:10px 18px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; flex:1; min-width:180px;">
+            View in Admin Panel →
+          </a>
+        </div>
       </div>
     `;
   });
@@ -924,9 +935,12 @@ function initBookPage() {
         <p class="form-success-desc" style="font-size:1rem; max-width:560px; margin:0 auto 24px auto;">
           Thank you, <strong>${name}</strong>. Your appointment request for <strong>${service}</strong> in <strong>${suburb}</strong> has been logged. Our operations manager will call <strong>${phone}</strong> within 15 minutes to confirm technician arrival.
         </p>
-        <div style="max-width:320px; margin:0 auto;">
-          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn">
-            Confirm Directly on WhatsApp
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; max-width:440px; margin:0 auto;">
+          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="whatsapp-dispatch-btn" style="flex:1; min-width:180px;">
+            Confirm on WhatsApp
+          </a>
+          <a href="/admin" class="btn btn-outline" style="padding:10px 18px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; flex:1; min-width:180px;">
+            View in Admin Panel →
           </a>
         </div>
       </div>

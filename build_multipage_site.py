@@ -958,6 +958,7 @@ def generate_service_page(meta):
 
 {get_footer()}
 
+  <script src="js/admin-leads.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>'''
@@ -1097,6 +1098,7 @@ def generate_services_directory_page():
 
 {get_footer()}
 
+  <script src="js/admin-leads.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>'''
